@@ -320,6 +320,7 @@ class MCPHandler(BaseHTTPRequestHandler):
             if not self.check_auth():
                 self.send_json(401, {"error": "Unauthorized"})
                 return
+            # Retornar lista de tools en formato simple Y JSON-RPC
             resp = {**TOOLS_LIST, "id": self.headers.get('X-Request-ID', 'discovery')}
             self.send_json(200, resp)
             return
@@ -345,6 +346,17 @@ class MCPHandler(BaseHTTPRequestHandler):
         req_id = req.get('id')
         method = req.get('method', '')
         params = req.get('params', {})
+
+        if method == 'initialize':
+            self.send_json(200, {
+                "jsonrpc": "2.0", "id": req_id,
+                "result": {
+                    "protocolVersion": "2024-11-05",
+                    "capabilities": {"tools": {}},
+                    "serverInfo": {"name": "TuProductoUY MCP", "version": "1.0.0"}
+                }
+            })
+            return
 
         if method == 'tools/list':
             self.send_json(200, {**TOOLS_LIST, "id": req_id})
