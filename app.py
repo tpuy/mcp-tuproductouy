@@ -317,12 +317,10 @@ class MCPHandler(BaseHTTPRequestHandler):
             return
 
         if path == '/mcp':
-            if not self.check_auth():
-                self.send_json(401, {"error": "Unauthorized"})
-                return
-            # Retornar lista de tools en formato simple Y JSON-RPC
-            resp = {**TOOLS_LIST, "id": self.headers.get('X-Request-ID', 'discovery')}
-            self.send_json(200, resp)
+            # Discovery: no requiere auth, retorna tools en formato simple
+            self.send_json(200, {
+                "tools": TOOLS_LIST["result"]["tools"]
+            })
             return
 
         self.send_json(404, {"error": "Not found"})
