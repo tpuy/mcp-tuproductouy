@@ -249,8 +249,13 @@ def mcp_call():
             "result": {"content": [{"type": "text", "text": text}]}
         })
 
+    # Notifications (one-way, no response body needed) — siempre HTTP 200
+    if method.startswith('notifications/'):
+        return ('', 200)
+
+    # Método desconocido — JSON-RPC error en body, HTTP 200 (nunca 400/500)
     return jsonify({"jsonrpc": "2.0", "id": req_id,
-                    "error": {"code": -32601, "message": f"Method '{method}' not found"}}), 400
+                    "error": {"code": -32601, "message": f"Method '{method}' not found"}})
 
 # ===================== MAIN =====================
 
